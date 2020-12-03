@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS Events(
 """
 CREATE TABLE IF NOT EXISTS Affinities(
 	id INTEGER,
-	name TEXT)
+	name TEXT,
+	priority INTEGER)
 """,
 """
 CREATE INDEX worker_name_index ON WorkerAffinities(worker_name)

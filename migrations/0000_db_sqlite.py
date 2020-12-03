@@ -101,7 +101,8 @@ CREATE INDEX IF NOT EXISTS Start_index ON Events(start)
 """
 CREATE TABLE IF NOT EXISTS Affinities(
 	id INTEGER,
-	name TEXT)
+	name TEXT,
+	priority INTEGER)
 """
 ]
 

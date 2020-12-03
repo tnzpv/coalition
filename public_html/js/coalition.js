@@ -1082,6 +1082,7 @@ function renderAffinities ()
 
   addTitleHTML ("id");
   addTitleHTML ("name");
+  addTitleHTML ("priority");
 
   table += "</tr>\n";
 	table += "</thead><tbody>";
@@ -1090,6 +1091,7 @@ function renderAffinities ()
   {
     table += "<tr>";
     table += "<td>"+i+"</td><td><input type='edit' class='ttedit' id='affinity"+i+"' name='affinity' value='' onchange='onchangeaffinityprop ("+i+")'></td>"
+    table += "<td>"+i+"</td><td><input type='edit' class='ttedit' id='affinityprio"+i+"' name='priority' value='' onchange='onchangeaffinityprioprop ("+i+")'></td>"
     table += "</tr>\n";
   }
 
@@ -1105,6 +1107,10 @@ function onchangeaffinityprop (affinity)
   $('#affinity'+affinity).css("background-color", "greenyellow");
 }
 
+function onchangeaffinityprioprop(affinity) {
+  $('#affinityprio'+affinity).css("background-color", "greenyellow");
+}
+
 function updateAffinities ()
 {
   $.ajax({ type: "GET", url: "/api/webfrontend/affinities", dataType: "json", success: 
@@ -1113,9 +1119,13 @@ function updateAffinities ()
       affinities = data;
       for (i = 1; i <= 63; ++i)
       {
-        var def = affinities[i];
+        var def = affinities[i][0];
+        var prio = affinities[i][1];
+
         if (def)
           $("#affinity"+i).attr("value", def);
+        if (prio)
+          $("#affinityprio"+i).attr("value", prio);
       }
     }
   });
@@ -1127,8 +1137,12 @@ function sendAffinities ()
   for (i = 1; i <= 63; ++i)
   {
     var affinity = $("#affinity"+i).val();
-    if (affinity != null)
-      affinities[i] = affinity;
+    var priority = $("#affinityprio"+i).val();
+    if (affinity != null) {
+      affinities[i] = [];
+      affinities[i][0] = affinity;
+      affinities[i][1] = priority;
+    }
   }
 
   var data = JSON.stringify(affinities)

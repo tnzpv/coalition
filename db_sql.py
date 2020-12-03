@@ -95,12 +95,12 @@ class DBSQL(DB):
 		cur = self.Conn.cursor ()
 		with self.Conn:
 			affinities = {}
-			self._execute (cur, "SELECT id, name FROM Affinities")
+			self._execute (cur, "SELECT id, name, priority FROM Affinities")
 			for row in cur:
-				affinities[int (row[0])] = row[1]
+				affinities[int (row[0])] = (row[1], row[2])
 			for i in range (1, 64):
 				if not i in affinities:
-					self._execute (cur, "INSERT INTO Affinities (id, name) VALUES (%d,'')" % i)
+					self._execute (cur, "INSERT INTO Affinities (id, name, priority) VALUES (%d,'','')" % i)
 
 	def _getLdapPermission(self, action):
 		"""Check ldap permissions.
@@ -187,19 +187,19 @@ class DBSQL(DB):
 
 	def getAffinities (self):
 		cur = self.Conn.cursor ()
-		self._execute (cur, "SELECT id, name FROM Affinities")
+		self._execute (cur, "SELECT id, name, priority FROM Affinities")
 		aff = {}
 		for row in cur:
 			if row[0] >= 1 and row[0] <= 63:
-				aff[row[0]] = row[1]
+				aff[row[0]] = (row[1], row[2])
 		return aff
 
 	def setAffinities (self, affinities):
 		# reset affinities cache
 		self.AffinityBitsToName = {}
 		cur = self.Conn.cursor ()
-		for id, affinity in affinities.iteritems ():
-			self._execute (cur, "UPDATE Affinities SET name = '%s' WHERE id = %d" % (affinity, int (id)))
+		for id, (affinity, priority) in affinities.iteritems ():
+			self._execute (cur, "UPDATE Affinities SET name = '%s', priority = %s WHERE id = %d" % (affinity, int(priority), int (id)))
 
 	def getAffinityMask (self, affinities):
 		if affinities == "":
@@ -640,8 +640,8 @@ class DBSQL(DB):
 			with self.Conn:
 				for i in range(1, 64):
 					self._execute(cur, dedent("""
-					INSERT INTO Affinities (id, name)
-					VALUES ('{}', '')""".format(i)))
+					INSERT INTO Affinities (id, name, priority)
+					VALUES ('{}', '', 50)""".format(i)))
 		return True
 
 	def moveJob (self, jobId, parent):
