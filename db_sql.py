@@ -224,7 +224,8 @@ class DBSQL(DB):
 			return self.AffinityBitsToName[affinity_bits]
 		names = []
 		aff = self.getAffinities()
-		for id, name in aff.iteritems ():
+
+		for id, (name, priority) in aff.iteritems ():
 			bit = (1L << (id-1))
 			if affinity_bits & bit != 0:
 				if name != '':
@@ -233,7 +234,7 @@ class DBSQL(DB):
 					names.append ("#"+ str (id))
 		names.sort ()
 		result = ",".join (names)
-		self.AffinityBitsToName[affinity_bits] = result
+		self.AffinityBitsToName[affinity_bits] = (result, priority)
 		return result
 
 	def newJob(self, parent, title, command, dir, environment, state, paused, timeout, 
