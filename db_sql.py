@@ -440,7 +440,7 @@ class DBSQL(DB):
 		for data in cur:
 			affinities.append( self.getAffinityString( data[0] ) )
 
-		worker['affinity'] = "\n".join( affinities )
+		worker['affinity'] = "\n".join( [a[0] for a in affinities] )
 		return worker
 
 	def getWorkerStartTime(self, name):
@@ -475,7 +475,7 @@ class DBSQL(DB):
 
 			for d in req:
 
-				affinities.append( self.getAffinityString( d[0] ) )
+				affinities.append( self.getAffinityString( d[0] )[0] )
 
 			worker['affinity'] = "\n".join( affinities )
 			worker['start_time'] = self.getWorkerStartTime(worker['name'])
